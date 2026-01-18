@@ -29,7 +29,10 @@
 
 //#define CHAR_UUID     "c8abbcc7-6d0e-405d-8802-7aff86ea21fe"
 
+extern bool deviceConnected;
+
 void bleSetup(void);
-void bleCommunicationTask(void * pvParameters);
+void bleRestartAdvertising(void);
+void bleNotifyValue(void);
 
 #endif //__BLE_SERVICE_CONFIG_H_
