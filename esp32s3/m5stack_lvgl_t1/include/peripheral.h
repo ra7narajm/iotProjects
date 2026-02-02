@@ -1,0 +1,3 @@
+#ifndef __M5DIAL_PERIPHERAL_H_
+#define __M5DIAL_PERIPHERAL_H_
+#endif //M5DIAL_PERIPHERAL_H_
