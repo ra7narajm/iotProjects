@@ -6,6 +6,7 @@ static lv_display_t *lvDisplay;
 //static lv_indev_t *encoderDev;
 
 objects_t objects;
+TaskHandle_t Ui_task;
 
 LV_FONT_DECLARE(orbitron_24_4bpp);
 LV_FONT_DECLARE(orbitron_14_4bpp);
@@ -66,7 +67,7 @@ void update_time_task(lv_timer_t * timer) {
 }
 
 static void __ui_refresh_screens(void) {
-    update_time_task(NULL);
+    //update_time_task(NULL);
 }
 
 // buffer size (SCREEN_HOR_RES * SCREEN_VER_RES / 10 * (LV_COLOR_DEPTH / 8)) ?
@@ -89,9 +90,18 @@ void ui_init(void) {
 
     __ui_create_screens();
 
-    //lv_timer_create(update_time_task, 1000, NULL);
+    lv_timer_create(update_time_task, 1000, NULL);
 }
 
 void ui_tick(void) {
     __ui_refresh_screens();
 }
+
+/*
+void ui_refresh_task(void *pvParams) {
+    for (;;) {
+        ui_tick();
+        delay(1000);
+    }
+}
+*/

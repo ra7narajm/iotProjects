@@ -94,5 +94,6 @@ void loop() {
   // put your main code here, to run repeatedly:
   lv_timer_handler();   //older version lv_task_handler() ref: https://docs.lvgl.io/8/porting/timer-handler.html
   ui_tick();
-  vTaskDelay(1000);   //5ms recommended
+  vTaskDelay(5);   //5ms recommended
+  lv_tick_inc(5);
 }

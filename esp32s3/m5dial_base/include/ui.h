@@ -17,6 +17,8 @@
 extern "C" {
 #endif
 
+extern TaskHandle_t Ui_Task;
+
 // for some reason unable to get EEZ studio ui working
 
 typedef struct _objects_t {
