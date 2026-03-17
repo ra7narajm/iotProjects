@@ -1,0 +1,10 @@
+USB-CDC
+https://community.platformio.org/t/esp32-c3-framework-arduino-serial-print-usb/30464
+
+https://community.platformio.org/t/esp32-s3-native-usb-interface-and-serial-monitor-missing-first-messages/40377/17
+
+
+make sure,
+~/.platformio/penv/bin/python3 -m ensurepip --upgrade
+
+if platform file defines specific variant, then add corresponding variant directory under ~/.platformio/packages/framework-arduinoespressif32/variants/

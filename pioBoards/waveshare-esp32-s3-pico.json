@@ -24,7 +24,7 @@
         ]
       ],
       "mcu": "esp32s3",
-      "variant": "waveshare_esp32_s3_pico"
+      "variant": "esp32s3"
     },
     "connectivity": [
       "wifi",
