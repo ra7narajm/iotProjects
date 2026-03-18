@@ -18,16 +18,34 @@ extern "C" {
 #endif
 
 extern TaskHandle_t Ui_Task;
+extern void ui_refresh_task(void *pvParams);
 
 // for some reason unable to get EEZ studio ui working
+// private --------------
+enum screenEnum {
+    screenMain = 0,
+    _screenMax = 1,
+};
 
-typedef struct _objects_t {
-    lv_obj_t *main;
+typedef struct _objects0_t {
+    lv_obj_t *main;         //screen
     lv_obj_t *clockLabel;
     lv_obj_t *dateLabel;
-} objects_t;
+} objects0_t;
 
-extern objects_t objects;
+extern objects0_t object0;  //1st screen objects
+
+/*
+typedef struct _objects1_t {
+    lv_obj_t *main;         //screen
+} objects1_t;
+
+extern objects1_t object1;  //2nd screen objects
+*/
+
+//list of screen, usage screen[screenID]
+extern lv_obj_t *screens[];
+// private --------------
 
 void ui_init(void);
 void ui_tick(void);

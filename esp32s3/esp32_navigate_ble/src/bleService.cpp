@@ -3,7 +3,7 @@
 
 #include "serialPrint.h"
 #include "bleServiceConfig.h"
-#include "displaySSD1306.h"
+//#include "displaySSD1306.h"
 
 // reference: https://github.com/espressif/arduino-esp32/blob/master/libraries/BLE
 // examples: https://github.com/nkolban/ESP32_BLE_Arduino/
@@ -30,7 +30,7 @@ class NaviDisplayServerCallbacks : public BLEServerCallbacks
     __vSafeSerialPrintln("Device Connected");
     deviceConnected = true;
 
-    displaySSD1306PrintNew(F("Device Connected"));
+    //displaySSD1306PrintNew(F("Device Connected"));
   }
 
   void onDisconnect(BLEServer *pServer)
@@ -44,7 +44,7 @@ class NaviDisplayServerCallbacks : public BLEServerCallbacks
       deviceConnected = false;
     }
 
-    displaySSD1306PrintNew(F("Device Disconnected"));
+    //displaySSD1306PrintNew(F("Device Disconnected"));
   }
 };
 
@@ -59,7 +59,7 @@ class NavDirectionServiceCallbacks : public BLECharacteristicCallbacks
       __vSafeSerialPrint(F("*********"));
       __vSafeSerialPrintln(rxValue);
 
-      displaySSD1306PrintNew(rxValue);
+      //displaySSD1306PrintNew(rxValue);
     }
   }
 };

@@ -22,12 +22,6 @@ static void encoder_read_cb(lv_indev_t *indev, lv_indev_data_t *data) {
 }
 */
 
-void buzzerTone(uint16_t pinNum, uint16_t duration) {
-  digitalWrite(pinNum, HIGH);
-  delay(duration);
-  digitalWrite(pinNum, LOW);
-}
-
 //wifi - save/read from preferences
 const char* ssid = "darks7ar";
 const char* password = "S0nuM0nuMr1dul";
@@ -50,10 +44,10 @@ static void __setup_wifi(void) {
 static void __timeavailable(struct timeval* t) {
   struct tm dtInfo;
   Serial.println("Got time adjustment from NTP!");
-  //update RTC 8563
   if (!getLocalTime(&dtInfo)) {
     Serial.println("No time available...");
   }
+  //update RTC 8563
   peripheral_rtc_set_date_time(&dtInfo);
   
   Serial.println(&dtInfo, "%A, %B %d %Y %H:%M:%S");
@@ -88,12 +82,21 @@ void setup() {
   ui_init();
   Serial.println("UI init complete.....");
   delay(1000);
+
+  //task setup
+  //ui task
+  xTaskCreatePinnedToCore(ui_refresh_task, "UITask", 4096, NULL, 2, &Ui_Task, 1);
 }
 
 void loop() {
+  #if 0
   // put your main code here, to run repeatedly:
   lv_timer_handler();   //older version lv_task_handler() ref: https://docs.lvgl.io/8/porting/timer-handler.html
   ui_tick();
   vTaskDelay(5);   //5ms recommended
   lv_tick_inc(5);
+  #endif
+  
+  peripheral_buzzer_tone(1000);
+  vTaskDelay(2000);
 }
