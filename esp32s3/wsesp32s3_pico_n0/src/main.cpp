@@ -17,7 +17,7 @@
 
 #define LED1_GPIO 41
 #define LED2_GPIO 42
-
+#define LED3_GPIO 40
 
 //BLE service configuration
 /* Service description
@@ -29,59 +29,47 @@
 // See the following for generating UUIDs:
 // https://www.uuidgenerator.net/
 
-//navigation service and characteristics
-#define NAVIGATION_DIRECTION_SERVICE_UUID        "b8a71569-4d81-4146-9580-f3a4f2817cfb"
-#define NAVIGATION_DIRECTION_CHARACTERISTIC_UUID "b8a71569-4d81-4146-9580-f3a4f2817ccc"
+#define ACCELERO_SERVICE_UUID "63f9f310-1d23-412b-b92c-6bf8bb1ee098"
+#define ACCELERO_CHAR_X_UUID  "2b5f66d7-9dc0-472d-9fd5-98fc5374dcde"
+#define ACCELERO_CHAR_Y_UUID  "1916e0ef-91ee-4039-aff9-89bea63a539a"
+#define ACCELERO_CHAR_Z_UUID  "b5cb2604-c5fe-4da4-a928-7362ac23497d"
 
-//date service and characteristics
-#define NAVIGATION_DATE_SERVICE_UUID        "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
-#define NAVIGATION_DATE_CHARACTERISTIC_UUID "6ba7b811-9dad-11d1-80b4-00c04fd430ff"
-
-#define SERVICE_UUID  "a2e12533-acba-46c7-b6cb-1379addd1fdd"
-#define CHAR_UUID     "a2e12533-acba-46c7-b6cb-1379addd1fff"
-
-//#define CHAR_UUID     "c8abbcc7-6d0e-405d-8802-7aff86ea21fe"
-
-// reference: https://github.com/espressif/arduino-esp32/blob/master/libraries/BLE
+// reference: htps://github.com/espressif/arduino-esp32/blob/master/libraries/BLE
 // examples: https://github.com/nkolban/ESP32_BLE_Arduino/
 
 BLEServer *pServer = NULL;
-BLEService *pNavDirService = NULL;
-BLECharacteristic *pNavDirCharacteristic = NULL;
+BLEService *pAcceleroService = NULL;
+BLECharacteristic *pAcceleroCharX = NULL;
+BLECharacteristic *pAcceleroCharY = NULL;
+BLECharacteristic *pAcceleroCharZ = NULL;
 // int connectedClients = 0;
 bool deviceConnected = false;
 uint8_t value = 0;
 
-class NaviDisplayServerCallbacks : public BLEServerCallbacks {
+class AcceleroServerCallbacks : public BLEServerCallbacks {
   void onConnect(BLEServer *pServer) {
-    // connectedClients++;
-    // Serial.print("Client connected. Total clients: ");
-    // Serial.println(connectedClients);
-    //  Continue advertising for more connections
-    // BLEDevice::startAdvertising();  //disabling for single connection
     Serial.println("Device Connected");
     deviceConnected = true;
-
-    //displaySSD1306PrintNew(F("Device Connected"));
   }
 
   void onDisconnect(BLEServer *pServer) {
-    // connectedClients--;
-    // Serial.print("Client disconnected. Total clients: ");
-    // Serial.println(connectedClients);
     Serial.println("Device Disconnected");
     /*if (connectedClients == 0)*/ { // single connection
       deviceConnected = false;
     }
-
-    //displaySSD1306PrintNew(F("Device Disconnected"));
   }
 };
 
-class NavDirectionServiceCallbacks : public BLECharacteristicCallbacks {
+class AcceleroCharXCallbacks : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic *pCharacteristic) {
-    String rxValue(pCharacteristic->getValue().c_str());
-
+    //String rxValue(pCharacteristic->getValue().c_str());
+    int rxValue = pCharacteristic->getValue().toInt();
+    Serial.printf("AcceleX: %d", rxValue);
+    if (rxValue != 0) {
+      digitalWrite(LED1_GPIO, HIGH);
+    }
+    
+    #if 0
     if (rxValue.length() > 0) {
       digitalWrite(LED2_GPIO, HIGH);
       Serial.print("********** RXValue: ");
@@ -89,92 +77,13 @@ class NavDirectionServiceCallbacks : public BLECharacteristicCallbacks {
         Serial.print(rxValue[i]);
       }
       //Serial.print(rxValue);
-
-      //displaySSD1306PrintNew(rxValue);
     }
     Serial.println();
+    #endif
   }
 };
-
-//"yyMMddHHmmssZ" (example, 010704120856-0700)
-/*
-class NavDateServiceCallbacks : public BLECharacteristicCallbacks {
-  void onWrite(BLECharacteristic *pCharacteristic) {
-    String rxValue(pCharacteristic->getValue().c_str());
-
-    if (rxValue.length() > 0) {
-      Serial.println("*********");
-      Serial.print("Received Date Value: ");
-      for (int i = 0; i < rxValue.length(); i++) {
-        Serial.print(rxValue[i]);
-      }
-
-      Serial.println();
-      Serial.println("*********");
-
-      //display.clearDisplay();
-      //display.println(rxValue);
-      //display.display();
-    }
-    BT_IN = pCharacteristic->getValue();
-    if (BT_IN.length() == 15) {
-    pCharacteristic->setValue("");
-    inString[0]= BT_IN[0];  //Y
-    inString[1]= BT_IN[1];  //Y
-    inString[2]= BT_IN[2];  //M
-    inString[3]= BT_IN[3];  //M
-    inString[4]= BT_IN[4];  //D
-    inString[5]= BT_IN[5];  //D
-    inString[6]= BT_IN[6];  //w     XXX Day of week not used
-    inString[7]= BT_IN[7];  //H
-    inString[8]= BT_IN[8];  //H
-    inString[9]= BT_IN[9];  //M
-    inString[10]= BT_IN[10];//M
-    inString[11]= BT_IN[11];//S
-    inString[12]= BT_IN[12];//S
-
-    Year = (((inString[0] -48)*10)+(inString[1] -48));
-    // now month
-    Month = (((inString[2] -48)*10)+(inString[3] -48));
-    // now date
-    Date = (((inString[4] -48)*10)+(inString[5] -48));
-    // now Day of Week
-    Dow = (inString[6] -48);
-    // now hour
-    Hour = (((inString[7] -48)*10)+(inString[8] -48));
-    // now minute
-    Minute = (((inString[9] -48)*10)+(inString[10] -48));
-    // now second
-    Second = (((inString[11] -48)*10)+(inString[12] -48));
-
-    myRTC.setClockMode(false);// set to 24h
-    myRTC.setYear(Year);
-    myRTC.setMonth(Month);
-    myRTC.setDate(Date);
-    myRTC.setDoW(Dow);
-    myRTC.setHour(Hour);
-    myRTC.setMinute(Minute);
-    myRTC.setSecond(Second);
-    myRTC.turnOffAlarm(1);
-    myRTC.turnOffAlarm(2);
-    Serial.println("The Time Has Been Set");
-    delay(600);
-    BLEDevice:: deinit(true);
-    Serial.println("Bluetooth has been turned off");
-    delay(600);             // Allow RTC registers to set before any read occurs
-
-    counter = 0;
-    }
-  }
-};
-*/
 
 void bleRestartAdvertising(void) {
-  /*
-  BLEDevice::deinit(true);
-  delay(1000);
-  bleSetup();
-  */
   if (!deviceConnected) {
     pServer->startAdvertising(); // restart advertising
     Serial.println("No clients connected, restarting advertising");
@@ -183,30 +92,25 @@ void bleRestartAdvertising(void) {
 
 void bleSetup(void) {
   // BLE server setup
-  BLEDevice::init("RA7NARAJM ESP32S3");
+  if (!BLEDevice::init("RA7NARAJMESP32S3")) {
+    Serial.println("BLE initialization failed!");
+    return;
+  }
   pServer = BLEDevice::createServer();
-  pServer->setCallbacks(new NaviDisplayServerCallbacks());
+  pServer->setCallbacks(new AcceleroServerCallbacks());
 
   // https://randomnerdtutorials.com/esp32-web-bluetooth/ BLE2902
 
   // Navigation Direction service
-  pNavDirService = pServer->createService(NAVIGATION_DIRECTION_SERVICE_UUID);
-  pNavDirCharacteristic = pNavDirService->createCharacteristic(NAVIGATION_DIRECTION_CHARACTERISTIC_UUID, BLECharacteristic::PROPERTY_WRITE|BLECharacteristic::PROPERTY_NOTIFY);
-  pNavDirCharacteristic->setCallbacks(new NavDirectionServiceCallbacks());
-  pNavDirCharacteristic->addDescriptor(new BLE2902());
+  pAcceleroService = pServer->createService(ACCELERO_SERVICE_UUID);
+  pAcceleroCharX = pAcceleroService->createCharacteristic(ACCELERO_CHAR_X_UUID, BLECharacteristic::PROPERTY_WRITE);
+  pAcceleroCharX->setCallbacks(new AcceleroCharXCallbacks());
 
-  // Date update service
-  // BLEService *pNavDateService = pServer->createService(NAVIGATION_DATE_SERVICE_UUID);
-  // BLECharacteristic *pNavDateCharacteristic = pNavDateService->createCharacteristic(NAVIGATION_DATE_CHARACTERISTIC_UUID, BLECharacteristic::PROPERTY_WRITE);
-  // pNavDateCharacteristic->setCallbacks(new NavDateServiceCallbacks());
-
-  pNavDirService->start();
-  // pNavDateService->start();
+  pAcceleroService->start();
 
   // Start advertising
   BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
-  pAdvertising->addServiceUUID(NAVIGATION_DIRECTION_SERVICE_UUID);
-  // pAdvertising->addServiceUUID(NAVIGATION_DATE_SERVICE_UUID);
+  pAdvertising->addServiceUUID(ACCELERO_SERVICE_UUID);
   pAdvertising->setScanResponse(true);
   // Set minimum preferred connection interval to 100ms (100 / 1.25 = 80)
   pAdvertising->setMinPreferred(0x80);
@@ -217,6 +121,7 @@ void bleSetup(void) {
   Serial.println("Characteristic defined! Now you can read it in your phone!");
 }
 
+#if 0
 void bleNotifyValue(void) {
   if (deviceConnected) {
     pNavDirCharacteristic->setValue((uint8_t *)&value, 1);
@@ -230,6 +135,7 @@ void bleNotifyValue(void) {
     //add delay to avoid stack congestion TODO
   }
 }
+#endif
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
@@ -245,6 +151,7 @@ void setup()
 
   pinMode(LED1_GPIO, OUTPUT);
   pinMode(LED2_GPIO, OUTPUT);
+  pinMode(LED3_GPIO, OUTPUT);
 
   bleSetup();
   delay(1000);
@@ -286,7 +193,7 @@ void setup()
 
 void loop()
 {
-  bleNotifyValue();
+  //bleNotifyValue();
   bleRestartAdvertising();
 
   vTaskDelay(1000);
