@@ -4,9 +4,9 @@
 #include "driver/ledc.h"
 #include "driver/gpio.h"
 
-#include "pin_config.h"
-
-
+#ifndef WSL_LCD_BACKLIGHT_GPIO
+#define WSL_LCD_BACKLIGHT_GPIO  6
+#endif
 
 void lcd_bl_pwm_bsp_init(uint16_t duty)
 { 

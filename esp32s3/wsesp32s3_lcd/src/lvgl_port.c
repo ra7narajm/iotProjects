@@ -2,6 +2,10 @@
 #include <string.h>
 #include <lvgl.h>
 
+#include <esp_lcd_st7701.h>
+#include <esp_lcd_panel_io_additions.h>
+#include <esp_io_expander.h>
+
 #include "pin_config.h"
 
 #include "freertos/FreeRTOS.h"
@@ -12,8 +16,7 @@
 #include "esp_timer.h"
 #include "esp_lcd_panel_rgb.h"
 #include "esp_lcd_panel_ops.h"
-#include "esp_lcd_st7701.h"
-#include "esp_lcd_panel_io_additions.h"
+
 
 static SemaphoreHandle_t lvgl_mux = NULL;
 static SemaphoreHandle_t flush_done_semaphore = NULL;

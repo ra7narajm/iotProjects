@@ -3,9 +3,11 @@
 #include <Preferences.h>
 #include <lvgl.h>
 
+#include <lcd_bl_pwm_bsp.h>
+
 #include "pin_config.h"
 #include "lvgl_port.h"
-#include "lcd_bl_pwm_bsp.h"
+//#include "lcd_bl_pwm_bsp.h"
 
 void setup() {
   Serial.begin(115200);
